@@ -28,14 +28,12 @@ MKPASSWORD=$(openssl rand -base64 18 | tr -d '/+=' | cut -c1-16)
 
 echo -e "$MKPASSWORD\n$MKPASSWORD" | su - "$SITE_NAME" -c "cmk-passwd cmkadmin --stdin"
 $STD omd start "$SITE_NAME"
-
 {
   echo "Application-Credentials"
   echo "Username: cmkadmin"
   echo "Password: $MKPASSWORD"
   echo "Site: $SITE_NAME"
 } >>~/checkmk.creds
-
 msg_ok "Created Service"
 
 cleanup_lxc

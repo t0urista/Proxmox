@@ -18,13 +18,10 @@ export DEBIAN_FRONTEND=noninteractive
 $STD apt -y install --no-install-recommends \
   git \
   traceroute \
-  make \
-  g++ \
-  traceroute \
+  build-essential \
   xvfb \
   dbus \
   xorg \
-  xvfb \
   gtk2-engines-pixbuf \
   dbus-x11 \
   xfonts-base \
@@ -64,13 +61,14 @@ msg_info "Setting up Chromium"
 chmod 755 /usr/bin/chromium
 msg_ok "Setup Chromium"
 
-fetch_and_deploy_gh_release "web-check" "CrazyWolf13/web-check" "tarball"
+fetch_and_deploy_gh_release "web-check" "Lissy93/web-check" "tarball"
 
 msg_info "Installing Web-Check (Patience)"
 cd /opt/web-check
 cat <<'EOF' >/opt/web-check/.env
 CHROME_PATH=/usr/bin/chromium
 PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
+PUPPETEER_SKIP_DOWNLOAD='true'
 HEADLESS=true
 GOOGLE_CLOUD_API_KEY=''
 REACT_APP_SHODAN_API_KEY=''

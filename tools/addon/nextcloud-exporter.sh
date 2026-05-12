@@ -19,7 +19,6 @@ source <(curl -fsSL https://raw.githubusercontent.com/asylumexp/Proxmox/main/mis
 set -Eeuo pipefail
 trap 'error_handler' ERR
 load_functions
-init_tool_telemetry "" "addon"
 
 # ==============================================================================
 # CONFIGURATION

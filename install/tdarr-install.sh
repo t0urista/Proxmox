@@ -26,6 +26,10 @@ $STD unzip Tdarr_Updater.zip
 chmod +x Tdarr_Updater
 $STD ./Tdarr_Updater
 rm -rf /opt/tdarr/Tdarr_Updater.zip
+[[ -f /opt/tdarr/Tdarr_Server/Tdarr_Server ]] || {
+  msg_error "Tdarr_Updater failed — tdarr.io may be blocked by local DNS"
+  exit 250
+}
 msg_ok "Installed Tdarr"
 
 setup_hwaccel

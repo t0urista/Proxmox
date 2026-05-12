@@ -58,10 +58,10 @@ msg_info "Creating ollama User and Group"
 if ! id ollama >/dev/null 2>&1; then
   useradd -r -s /usr/sbin/nologin -U -m -d /usr/share/ollama ollama
 fi
-$STD usermod -aG render ollama || true
-$STD usermod -aG video ollama || true
 $STD usermod -aG ollama $(id -u -n)
 msg_ok "Created ollama User and adjusted Groups"
+
+setup_hwaccel "ollama"
 
 msg_info "Creating Service"
 cat <<EOF >/etc/systemd/system/ollama.service

@@ -204,6 +204,7 @@ User=root
 Environment=NODE_ENV=production
 Environment=ENVIRONMENT=prod
 WorkingDirectory=/opt/pangolin
+ExecStartPre=/usr/bin/node dist/migrations.mjs
 ExecStart=/usr/bin/node --enable-source-maps dist/server.mjs
 Restart=always
 RestartSec=10

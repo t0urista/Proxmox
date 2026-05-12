@@ -93,14 +93,17 @@ curl -fOL https://github.com/coder/code-server/releases/download/v"$VERSION"/cod
 dpkg -i code-server_"${VERSION}"_arm64.deb &>/dev/null
 rm -rf code-server_"${VERSION}"_arm64.deb
 mkdir -p ~/.config/code-server/
-systemctl enable -q --now code-server@"$USER"
 cat <<EOF >~/.config/code-server/config.yaml
 bind-addr: 0.0.0.0:8680
 auth: none
 password: 
 cert: false
 EOF
+systemctl enable -q --now code-server@"$USER"
 systemctl restart code-server@"$USER"
+if ! systemctl is-active --quiet code-server@"$USER"; then
+  error_exit "code-server service failed to start."
+fi
 msg_ok "Installed Code-Server v${VERSION} on $hostname"
 
 echo -e "${APP} should be reachable by going to the following URL.

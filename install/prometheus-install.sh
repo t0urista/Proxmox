@@ -37,6 +37,7 @@ ExecStart=/usr/local/bin/prometheus \
     --storage.tsdb.path=/var/lib/prometheus/ \
     --web.listen-address=0.0.0.0:9090
 
+
 [Install]
 WantedBy=multi-user.target
 EOF

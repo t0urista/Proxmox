@@ -30,16 +30,17 @@ SEM_KEY=$(openssl rand -base64 32)
 SEM_PW=$(openssl rand -base64 12)
 cat <<EOF >/opt/semaphore/config.json
 {
-  "bolt": {
-    "host": "/opt/semaphore/semaphore_db.bolt"
+  "sqlite": {
+    "host": "/opt/semaphore/database.sqlite"
   },
+  "dialect": "sqlite",
   "tmp_path": "/opt/semaphore/tmp",
-  "cookie_hash": "${SEM_HASH}",
+  "cookie_hash": "${SEM_HASH}", 
   "cookie_encryption": "${SEM_ENCRYPTION}",
   "access_key_encryption": "${SEM_KEY}"
 }
 EOF
-$STD semaphore user add --admin --login admin --email admin@helper-scripts.com --name Administrator --password "${SEM_PW}" --config /opt/semaphore/config.json
+$STD semaphore user add --admin --login admin --email admin@community-scripts.org --name Administrator --password "${SEM_PW}" --config /opt/semaphore/config.json
 echo "${SEM_PW}" >~/semaphore.creds
 msg_ok "Setup Semaphore"
 

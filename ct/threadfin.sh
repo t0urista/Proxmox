@@ -29,7 +29,7 @@ function update_script() {
     exit
   fi
 
-  if check_for_gh_release "threadfin" "threadfin/threadfin"; then
+  if check_for_gh_release "threadfin-app" "threadfin/threadfin"; then
     msg_info "Stopping Service"
     systemctl stop threadfin
     msg_ok "Stopped Service"

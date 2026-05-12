@@ -24,22 +24,26 @@ function update_script() {
   check_container_storage
   check_container_resources
 
-  if [[ ! -f /etc/systemd/system/Reactive-Resume.service ]]; then
+  if [[ ! -f /etc/systemd/system/reactive-resume.service ]]; then
     msg_error "No $APP Installation Found!"
     exit
   fi
-  if check_for_gh_release "Reactive-Resume" "lazy-media/Reactive-Resume"; then
+  if check_for_gh_release "reactive-resume" "amruthpillai/reactive-resume"; then
     msg_info "Stopping services"
-    systemctl stop Reactive-Resume
+    systemctl stop reactive-resume
     msg_ok "Stopped services"
 
-    cp /opt/Reactive-Resume/.env /opt/rxresume.env
-    fetch_and_deploy_gh_release "Reactive-Resume" "lazy-media/Reactive-Resume" "tarball" "latest" "/opt/Reactive-Resume"
+    ensure_dependencies git
 
-    msg_info "Updating Reactive-Resume"
-    cd /opt/Reactive-Resume
-    export PUPPETEER_SKIP_DOWNLOAD="true"
-    export NEXT_TELEMETRY_DISABLED=1
+    cp /opt/reactive-resume/.env /opt/reactive-resume.env.bak
+    NODE_VERSION="24" setup_nodejs
+    CLEAN_INSTALL=1 fetch_and_deploy_gh_release "reactive-resume" "amruthpillai/reactive-resume" "tarball" "latest" "/opt/reactive-resume"
+
+    msg_info "Updating Reactive Resume (Patience)"
+    cd /opt/reactive-resume
+    export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+    corepack enable
+    corepack prepare --activate
     export CI="true"
     export NODE_ENV="production"
     $STD pnpm install --frozen-lockfile
@@ -79,7 +83,7 @@ function update_script() {
     msg_ok "Updated Browserless"
 
     msg_info "Restarting services"
-    systemctl start minio Reactive-Resume browserless
+    systemctl start chromium-printer reactive-resume
     msg_ok "Restarted services"
     msg_ok "Updated successfully!"
   fi

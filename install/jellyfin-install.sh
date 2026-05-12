@@ -14,13 +14,9 @@ network_check
 update_os
 
 msg_custom "ℹ️" "${GN}" "If NVIDIA GPU passthrough is detected, you'll be asked whether to install drivers in the container"
-setup_hwaccel
 
-msg_info "Installing Jellyfin"
-VERSION="$(awk -F'=' '/^VERSION_CODENAME=/{ print $NF }' /etc/os-release)"
-if ! dpkg -s libjemalloc2 >/dev/null 2>&1; then
-  $STD apt install -y libjemalloc2
-fi
+msg_info "Installing Dependencies"
+ensure_dependencies libjemalloc2
 if [[ ! -f /usr/lib/libjemalloc.so ]]; then
   ln -sf /usr/lib/aarch64-linux-gnu/libjemalloc.so.2 /usr/lib/libjemalloc.so
 fi
@@ -37,8 +33,23 @@ Architectures: arm64
 Signed-By: /etc/apt/keyrings/jellyfin.gpg
 EOF
 
-$STD apt update
-$STD apt install -y jellyfin
+msg_info "Setting up Jellyfin Repository"
+setup_deb822_repo \
+  "jellyfin" \
+  "https://repo.jellyfin.org/jellyfin_team.gpg.key" \
+  "https://repo.jellyfin.org/$(get_os_info id)" \
+  "$(get_os_info codename)"
+msg_ok "Set up Jellyfin Repository"
+
+msg_info "Installing Jellyfin"
+$STD apt install -y jellyfin jellyfin-ffmpeg7
+ln -sf /usr/lib/jellyfin-ffmpeg/ffmpeg /usr/bin/ffmpeg
+ln -sf /usr/lib/jellyfin-ffmpeg/ffprobe /usr/bin/ffprobe
+msg_ok "Installed Jellyfin"
+
+setup_hwaccel "jellyfin"
+
+msg_info "Configuring Jellyfin"
 # Configure log rotation to prevent disk fill (keeps fail2ban compatibility) (PR: #1690 / Issue: #11224)
 cat <<EOF >/etc/logrotate.d/jellyfin
 /var/log/jellyfin/*.log {
@@ -55,12 +66,7 @@ EOF
 chown -R jellyfin:adm /etc/jellyfin
 sleep 10
 systemctl restart jellyfin
-if [[ "$CTTYPE" == "0" ]]; then
-  sed -i -e 's/^ssl-cert:x:104:$/render:x:104:root,jellyfin/' -e 's/^render:x:108:root,jellyfin$/ssl-cert:x:108:/' /etc/group
-else
-  sed -i -e 's/^ssl-cert:x:104:$/render:x:104:jellyfin/' -e 's/^render:x:108:jellyfin$/ssl-cert:x:108:/' /etc/group
-fi
-msg_ok "Installed Jellyfin"
+msg_ok "Configured Jellyfin"
 
 motd_ssh
 customize

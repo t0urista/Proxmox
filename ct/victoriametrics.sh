@@ -32,6 +32,8 @@ function update_script() {
     msg_info "Stopping Service"
     systemctl stop victoriametrics
     [[ -f /etc/systemd/system/victoriametrics-logs.service ]] && systemctl stop victoriametrics-logs
+    [[ -f /etc/systemd/system/vmagent.service ]] && systemctl stop vmagent
+    [[ -f /etc/systemd/system/vmalert.service ]] && systemctl stop vmalert
     msg_ok "Stopped Service"
 
     victoriametrics_filename=$(curl -fsSL "https://api.github.com/repos/VictoriaMetrics/VictoriaMetrics/releases/latest" |
@@ -41,8 +43,13 @@ function update_script() {
       jq -r '.assets[].name' |
       grep -E '^vmutils-linux-arm64-v[0-9.]+\.tar\.gz$')
 
-    fetch_and_deploy_gh_release "victoriametrics" "VictoriaMetrics/VictoriaMetrics" "prebuild" "latest" "/opt/victoriametrics" "$victoriametrics_filename"
-    fetch_and_deploy_gh_release "vmutils" "VictoriaMetrics/VictoriaMetrics" "prebuild" "latest" "/opt/victoriametrics" "$vmutils_filename"
+    msg_debug "Using release $victoriametrics_release"
+
+    victoriametrics_filename="victoria-metrics-linux-amd64-${victoriametrics_release}.tar.gz"
+    vmutils_filename="vmutils-linux-amd64-${victoriametrics_release}.tar.gz"
+
+    fetch_and_deploy_gh_release "victoriametrics" "VictoriaMetrics/VictoriaMetrics" "prebuild" "$victoriametrics_release" "/opt/victoriametrics" "$victoriametrics_filename"
+    fetch_and_deploy_gh_release "vmutils" "VictoriaMetrics/VictoriaMetrics" "prebuild" "$victoriametrics_release" "/opt/victoriametrics" "$vmutils_filename"
 
     if [[ -f /etc/systemd/system/victoriametrics-logs.service ]]; then
       vmlogs_filename=$(curl -fsSL "https://api.github.com/repos/VictoriaMetrics/VictoriaLogs/releases/latest" |
@@ -51,7 +58,6 @@ function update_script() {
       vlutils_filename=$(curl -fsSL "https://api.github.com/repos/VictoriaMetrics/VictoriaLogs/releases/latest" |
         jq -r '.assets[].name' |
         grep -E '^vlutils-linux-arm64-v[0-9.]+\.tar\.gz$')
-        
       fetch_and_deploy_gh_release "victorialogs" "VictoriaMetrics/VictoriaLogs" "prebuild" "latest" "/opt/victoriametrics" "$vmlogs_filename"
       fetch_and_deploy_gh_release "vlutils" "VictoriaMetrics/VictoriaLogs" "prebuild" "latest" "/opt/victoriametrics" "$vlutils_filename"
     fi
@@ -60,6 +66,8 @@ function update_script() {
     msg_info "Starting Service"
     systemctl start victoriametrics
     [[ -f /etc/systemd/system/victoriametrics-logs.service ]] && systemctl start victoriametrics-logs
+    [[ -f /etc/systemd/system/vmagent.service ]] && systemctl start vmagent
+    [[ -f /etc/systemd/system/vmalert.service ]] && systemctl start vmalert
     msg_ok "Started Service"
     msg_ok "Updated successfully!"
   fi

@@ -27,7 +27,7 @@ function update_script() {
   fi
 
   APIRELEASE=$(curl -s https://api.github.com/repos/lejianwen/rustdesk-api/releases/latest | grep "tag_name" | awk '{print substr($2, 3, length($2)-4) }')
-  RELEASE=$(curl -s https://api.github.com/repos/rustdesk/rustdesk-server/releases/latest | grep "tag_name" | awk '{print substr($2, 2, length($2)-3) }')
+  RELEASE=$(curl -s https://api.github.com/repos/lejianwen/rustdesk-server/releases/latest | grep "tag_name" | awk '{print substr($2, 2, length($2)-3) }')
   if [ "${RELEASE}" != "$(cat ~/.rustdesk-server 2>/dev/null)" ] || [ ! -f ~/.rustdesk-server ]; then
     msg_info "Updating RustDesk Server to v${RELEASE}"
     $STD apk -U upgrade
@@ -56,7 +56,7 @@ function update_script() {
     echo "${APIRELEASE}" >~/.rustdesk-api
     $STD service rustdesk-api start
     rm -rf release
-    rm -f $temp_file2
+    rm -f "$temp_file2"
     msg_ok "Updated RustDesk API"
   else
     msg_ok "No update required. RustDesk API is already at v${APIRELEASE}"

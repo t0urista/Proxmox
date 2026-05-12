@@ -63,10 +63,10 @@ expect "Email address"
 send "\r"
 
 expect "Password"
-send "helper-scripts.com\r"
+send "community-scripts.org\r"
 
 expect "Password (again)"
-send "helper-scripts.com\r"
+send "community-scripts.org\r"
 
 expect eof
 EOF

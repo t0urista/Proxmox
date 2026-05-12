@@ -30,7 +30,6 @@ DEFAULT_PORT=3000
 
 # Initialize all core functions (colors, formatting, icons, $STD mode)
 load_functions
-init_tool_telemetry "" "addon"
 
 # ==============================================================================
 # HEADER

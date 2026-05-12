@@ -7,7 +7,7 @@ source <(curl -fsSL https://raw.githubusercontent.com/asylumexp/Proxmox/main/mis
 
 APP="Frigate"
 var_tags="${var_tags:-nvr}"
-var_cpu="${var_cpu:-4}"
+var_cpu="${var_cpu:-8}"
 var_ram="${var_ram:-4096}"
 var_disk="${var_disk:-20}"
 var_os="${var_os:-debian}"
